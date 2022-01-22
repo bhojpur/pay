@@ -1,4 +1,4 @@
-package cmd
+package merchant
 
 // Copyright (c) 2018 Bhojpur Consulting Private Limited, India. All rights reserved.
 
@@ -20,41 +20,18 @@ package cmd
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import (
-	"fmt"
-	"os"
+import "errors"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
+var (
+	ErrInvalidNumber      = errors.New("merchant: the card number is not a valid credit card number.")
+	ErrInvalidExpiryMonth = errors.New("merchant: the card's expiration month is invalid.")
+	ErrInvalidExpiryYear  = errors.New("merchant: the card's expiration year is invalid.")
+	ErrInvalidCVC         = errors.New("merchant: the card's security code is invalid.")
+	ErrIncorrectNumber    = errors.New("merchant: the card number is incorrect.")
+	ErrExpiredCard        = errors.New("merchant: the card has expired.")
+	ErrIncorrectCVC       = errors.New("merchant: the card's security code is incorrect.")
+	ErrIncorrectZip       = errors.New("merchant: the card's zip code failed validation.")
+	ErrCardDeclined       = errors.New("merchant: the card was declined.")
+	ErrMissing            = errors.New("merchant: there is no card on a customer that is being charged.")
+	ErrProcessingError    = errors.New("merchant: an error occurred while processing the card.")
 )
-
-var verbose bool
-
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "paysvr",
-	Short: "Bhojpur PayEngine is a digital payments data processing server",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		if verbose {
-			log.SetLevel(log.DebugLevel)
-			log.Debug("verbose logging enabled")
-		}
-	},
-
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
-}
-
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-}
-
-func init() {
-	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "en/disable verbose logging")
-}

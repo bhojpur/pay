@@ -1,4 +1,4 @@
-package cmd
+package amazon_pay
 
 // Copyright (c) 2018 Bhojpur Consulting Private Limited, India. All rights reserved.
 
@@ -20,41 +20,27 @@ package cmd
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import (
-	"fmt"
-	"os"
-
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-)
-
-var verbose bool
-
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "paysvr",
-	Short: "Bhojpur PayEngine is a digital payments data processing server",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		if verbose {
-			log.SetLevel(log.DebugLevel)
-			log.Debug("verbose logging enabled")
-		}
-	},
-
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+// AmazonPay amazon pay
+type AmazonPay struct {
+	*Config
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+// Config amazon pay configuration
+type Config struct {
+	MerchantID   string
+	AccessKey    string
+	SecretKey    string
+	Region       string
+	CurrencyCode string
+
+	ProductionMode bool
+}
+
+// New initialize amazon pay
+func New(config *Config) *AmazonPay {
+	if config == nil {
+		config = &Config{}
 	}
-}
 
-func init() {
-	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "en/disable verbose logging")
+	return &AmazonPay{Config: config}
 }

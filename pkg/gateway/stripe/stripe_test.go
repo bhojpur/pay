@@ -1,4 +1,4 @@
-package cmd
+package stripe_test
 
 // Copyright (c) 2018 Bhojpur Consulting Private Limited, India. All rights reserved.
 
@@ -23,38 +23,43 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"testing"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
+	cfgsvr "github.com/bhojpur/configure/pkg/markup"
+	"github.com/bhojpur/pay/pkg/gateway/stripe"
+	"github.com/bhojpur/pay/tests"
+	"github.com/stripe/stripe-go/customer"
 )
 
-var verbose bool
+var Stripe *stripe.Stripe
 
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "paysvr",
-	Short: "Bhojpur PayEngine is a digital payments data processing server",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		if verbose {
-			log.SetLevel(log.DebugLevel)
-			log.Debug("verbose logging enabled")
-		}
-	},
-
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
-}
-
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+type Config struct {
+	Key string `required:"true"`
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "en/disable verbose logging")
+	var config = &Config{}
+	os.Setenv("CONFIGURE_ENV_PREFIX", "-")
+	if err := cfgsvr.Load(config); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	Stripe = stripe.New(&stripe.Config{
+		Key: config.Key,
+	})
+}
+
+func TestTestSuite(t *testing.T) {
+	tests.TestSuite{
+		CreditCardManager: Stripe,
+		Gateway:           Stripe,
+		GetRandomCustomerID: func() string {
+			Customer, err := customer.New(nil)
+			if err != nil {
+				fmt.Printf("Get error when create customer: %v", err)
+			}
+			return Customer.ID
+		},
+	}.TestAll(t)
 }

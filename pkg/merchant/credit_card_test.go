@@ -1,4 +1,4 @@
-package cmd
+package merchant
 
 // Copyright (c) 2018 Bhojpur Consulting Private Limited, India. All rights reserved.
 
@@ -20,41 +20,15 @@ package cmd
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import (
-	"fmt"
-	"os"
+import "testing"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-)
+func TestCreditCardLuhnAlgorithm(t *testing.T) {
+	validNumbers := []string{"4111111111111111", "5431111111111111", "341111111111111", "6011601160116611", "5105105105105100", "5555555555554444", "4222222222222", "378282246310005", "371449635398431", "378734493671000", "38520000023237", "30569309025904", "6011111111111117", "6011000990139424", "3530111333300000", "3566002020360505"}
 
-var verbose bool
-
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "paysvr",
-	Short: "Bhojpur PayEngine is a digital payments data processing server",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		if verbose {
-			log.SetLevel(log.DebugLevel)
-			log.Debug("verbose logging enabled")
+	for _, number := range validNumbers {
+		creditCard := CreditCard{Number: number}
+		if !creditCard.ValidNumber() {
+			t.Errorf("%v should be valid", number)
 		}
-	},
-
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
-}
-
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
 	}
-}
-
-func init() {
-	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "en/disable verbose logging")
 }

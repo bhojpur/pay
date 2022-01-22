@@ -61,8 +61,8 @@ var rootCmdOpts struct {
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "pay",
-	Short: "Bhojpur Pay is a payments data processing engine powered by Kubernetes",
+	Use:   "payctl",
+	Short: "Bhojpur Payctl is a digital payments processing command engine",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if verbose {
 			log.SetLevel(log.DebugLevel)
