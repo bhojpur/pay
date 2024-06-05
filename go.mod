@@ -17,7 +17,7 @@ require (
 
 require (
 	github.com/stripe/stripe-go v70.15.0+incompatible
-	golang.org/x/text v0.3.7
+	golang.org/x/text v0.16.0
 )
 
 require (
